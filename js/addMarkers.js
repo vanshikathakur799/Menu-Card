@@ -107,6 +107,44 @@ AFRAME.registerComponent("create-markers", {
       pricePlane.appendChild(price)
 
       marker.appendChild(pricePlane)
+
+      // Dish rating plane
+      var ratingPlane = document.createElement('a-entity')
+      ratingPlane.setAttribute('id', `rating-plane-${dish.id}`)
+      ratingPlane.setAttribute('position', {x: 2, y:0 , z: 0.5})
+      ratingPlane.setAttribute('geometry', {primitive: 'plane', width: 1.5, height: 0.3})
+      ratingPlane.setAttribute('material', {color: "#F0C30F"})
+      ratingPlane.setAttribute('rotation', {x: -90, y: 0, z: 0})
+      ratingPlane.setAttribute('visible', false)
+
+      // ratings
+      var rating = document.createElement('a-entity')
+      rating.setAttribute('id', `rating-${dish.id}`)
+      rating.setAttribute('position', {x: 0, y: 0.05, z: 0.1})
+      rating.setAttribute('rotation', {x: 0, y: 0, z: 0})
+      rating.setAttribute('text', {font: 'mozillavr', color: 'black', width: 2.5, align: 'center', value: `Customer Rating: ${dish.last_rating}`})
+
+      ratingPlane.appendChild(rating)
+      marker.appendChild(ratingPlane)
+
+      // dish Review Plane
+      var reviewplane = document.createElement('a-entity')
+      reviewplane.setAttribute('id', `review-plane-${dish.id}`)
+      reviewplane.setAttribute('position', {x: 2, y: 0, z: 0})
+      reviewplane.setAttribute('geometry', {primitive: 'plane', width: 1.5, height: 0.6})
+      reviewplane.setAttribute('material', {color: "#F0C30F"})
+      reviewplane.setAttribute('rotation', {x: -90, y: 0,z: 0})
+      reviewplane.setAttribute('visible', false)
+
+      // dish review
+      var review = document.createElement('a-entity')
+      review.setAttribute('id', `review-${dish.id}`)
+      review.setAttribute('position', {x: 0, y: 0.05, z: 0.1})
+      review.setAttribute('rotation', {x: 0, y: 0, z: 0})
+      review.setAttribute('text', {font: 'mozillavr', color: 'black', width: 2.5, align: 'center', value: `Customer Review: ${dish.last_review}`})
+
+      reviewplane.appendChild(review)
+      marker.appendChild(reviewplane)
     }
     });
   },

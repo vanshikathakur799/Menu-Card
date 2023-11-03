@@ -84,14 +84,11 @@ AFRAME.registerComponent("markerhandler", {
     var ratingButton = document.getElementById("rating-button");
     var orderButtton = document.getElementById("order-button");
     var orderSummary = document.getElementById('order-summary')
+    var payButton = document.getElementById('pay-button')
 
     // Handling Click Events
-    ratingButton.addEventListener("click", function () {
-      swal({
-        icon: "warning",
-        title: "Rate Dish",
-        text: "Work In Progress"
-      });
+    ratingButton.addEventListener("click", () => {
+      this.handleRating(dish)
     });
 
     orderButtton.addEventListener("click", () => {
@@ -108,6 +105,10 @@ AFRAME.registerComponent("markerhandler", {
 
     orderSummary.addEventListener("click", () => {
       this.handleOrderSummary()
+    })
+
+    payButton.addEventListener('click', () => {
+      this.handlePayment()
     })
   }
     
@@ -204,6 +205,64 @@ AFRAME.registerComponent("markerhandler", {
       tableTag.appendChild(totaltr) 
     })
 
+  },
+
+  handlePayment: function() {
+    document.getElementById('modal-div').style.display = 'none'
+    var tableNo  
+    tableNo <= 9?(tableNo = `t0${tableNo}`): `t${tableNo}`
+    firebase.firestore().collection('tables').doc(tableNo).update({
+      current_orders: {},
+      total_bill: 0
+    }).then(() => {
+      swal({
+        icon: 'success',
+        title: 'Payment is Done Successfully',
+        text: 'We hope you enjoyed your food',
+        timer: 4000,
+        buttons: false 
+      })
+    })
+  },
+
+  handleRating: async function(dish) {
+    var tableNo
+    tableNo <= 9? (tableNo = `t0${tableNo}`): `t${tableNo}`
+    var orderSummary = await this.getOrderSummary(tableNo)
+    var currentOrders = Object.keys(orderSummary.current_orders)
+    if (currentOrders.length > 0 && currentOrders === dish.id){
+      document.getElementById('rating-modal-div').style.display = 'flex'
+      document.getElementById('rating-input').value = 0
+      document.getElementById('feedback-input').value = ''
+      var saveRatingButton = document.getElementById('save-rating-button')
+      saveRatingButton.addEventListener('click', () => {
+        document.getElementById('rating-modal-div').style.display = 'none'
+        var rating = document.getElementById('rating-input').value 
+        var feedback = document.getElementById('feedback-input').value
+        firebase.firestore().collection('dishes').doc(dish.id).update({
+          last_review: feedback,
+          last_rating: rating
+        }).then(() => {
+          swal({
+            icon: 'success',
+            title: 'Thanks for Rating',
+            text: 'We hope you liked our service',
+            timer: 4000,
+            buttons: false
+          })
+        })
+      })
+    }
+
+    else{
+      swal({
+        icon: 'warning',
+        title: 'Oops, Something went wrong',
+        text: 'No dish is found to give rating',
+        timer: 4000,
+        buttons: false
+      })
+    }
   },
 
   //get the dishes collection from firestore database
